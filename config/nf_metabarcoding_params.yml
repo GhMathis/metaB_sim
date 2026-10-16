@@ -1,0 +1,42 @@
+# nf-metabarcoding parameters shared by every run.
+# Read by nextflow through -params-file (scripts/05_run_nf_metabarcoding.sh).
+# Pipeline: https://github.com/frederic-mahe/nf-metabarcoding, release pinned in the script.
+#
+# Passed by the script, not set here:
+#   --input, --outdir, --project_name   the run (samplesheet, output folder, file prefix)
+#   --forward_primer, --reverse_primer  read from the primer file that grinder uses
+#                                       (-forward_reverse in config/grinder_params.txt),
+#                                       so simulation and analysis share one primer pair
+#   --reference_dataset                 the stampa reference built for that primer pair
+#                                       by scripts/04_build_stampa_reference.sh
+
+# Primer trimming (cutadapt): reads missing either primer are discarded
+no_trimming: false
+
+# Part C: taxonomic assignment with stampa (vsearch global alignment + last common ancestor)
+taxonomy_method: stampa
+
+# Cores per task (vsearch, swarm, cutadapt). The total used on the server is
+# capped by config/nf_metabarcoding_server.config.
+threads: 4
+
+# Pipeline defaults (v0.6.0), written out explicitly so they cannot change silently
+primer_error_rate: 0.1          # cutadapt --error-rate
+primer_overlap_fraction: 0.667  # cutadapt --overlap = 2/3 of the primer length
+fastq_encoding: 33
+fastq_minlen: 32          # reads shorter than this (after trimming) are dropped
+hash_function: sha1
+min_cluster_size: 2       # per-sample swarm clusters kept if > 2 reads
+fastidious: true
+percentage: 0.05          # cleaving: sub-seed present in >= 5 % of samples
+chimera_minsize: 2        # uchime_denovo only sees sequences with abundance >= 2
+similar_id: 0.84          # mumu match list
+similar_query_cov: 0.9
+similar_maxhits: 10
+max_ee: 0.0002            # occurrence table filter: ee / length <= max_ee
+min_abundance: 3          #   and (abundance >= min_abundance
+min_spread: 2             #        or present in >= min_spread samples)
+stampa_id: 0.5
+iddef: 1
+majority_assignment: false
+recover_unmerged: false   # single-end reads: no merging step anyway

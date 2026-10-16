@@ -1,0 +1,54 @@
+# Grinder arguments shared by all 50 samples of the chimera sweep (10 chimera levels x 5
+# replicates). Read by grinder through -profile_file: one option per line, comment lines
+# start with #.
+# The community is not drawn here: config/grinder_community.txt draws it once, and every
+# sample receives it through -abundance_file. The script also passes, per sample, the
+# reference, the output names, -chimera_perc (0 to 9 %) and -random_seed (one per sample).
+#
+# Aim of the sweep: measure how chimeras affect diversity estimates at the end of the
+# whole nf-metabarcoding pipeline. -chimera_perc is therefore the only design value that
+# differs between levels; the replicates of a level differ only by their seed. No other
+# source of spurious diversity is simulated: sequencing errors stay off (see the end of
+# this file).
+#
+# Design value: read depth per sample
+-total_reads 2000
+#
+# Amplicon mode: 16S rRNA V4, primers 515F-Y / 806RB (config/primers_16S_V4.fasta).
+# Grinder keeps only the references matching both primers exactly (IUPAC codes allowed,
+# U matches T) and cuts each amplicon from primer to primer, primers included.
+-forward_reverse config/primers_16S_V4.fasta
+# Reads start at the forward primer (forward strand only), and grinder shortens a read to
+# its amplicon. With a read length above the amplicons (~292 nt; 27 of the 525,178 SILVA
+# amplicons exceed 500 nt), every read is a whole amplicon, like a merged read pair.
+# nf-metabarcoding discards reads missing a primer, so the read length must not fall below that.
+-unidirectional 1
+-read_dist 500
+#
+# Chosen values that differ from grinder's defaults
+# No bias from amplicon length or gene copy number (defaults: 1). Grinder recommends
+# -length_bias 0 for amplicons; copy number plays no role with one gene per reference.
+-length_bias 0
+-copy_bias 0
+# FASTQ output, which nf-metabarcoding needs (default: FASTA only)
+-fastq_output 1
+# Quality scores (default: none). Correct bases get Q40: the top quality level of current
+# Illumina instruments (NovaSeq X reports 12, 24 and 40), and about the quality of merged
+# read pairs (vsearch caps it at 41). Bases from simulated errors would get Q12, the lowest
+# level. No errors are simulated, so every base is Q40. Keep the first value >= 37:
+# nf-metabarcoding drops sequences above 0.0002 expected errors per base (max_ee),
+# that is, below Q37.
+-qual_levels 40 12
+#
+# Grinder defaults, written out explicitly so they cannot change silently
+-insert_dist 0
+-chimera_dist 314 38 1
+-chimera_kmer 10
+-desc_track 1
+# No homopolymer errors
+-homopolymer_dist 0
+#
+# Left unset, so grinder's default applies:
+#   -mutation_dist and -mutation_ratio: no substitutions or indels (default uniform 0 0).
+#     Off on purpose, so that chimeras are the only artefact in the sweep.
+#   -coverage_fold, -multiplex_ids: not used

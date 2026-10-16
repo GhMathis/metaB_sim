@@ -1,0 +1,7 @@
+# Scripts and configs run on the Linux analysis server: keep LF line endings
+# whatever core.autocrlf says on the Windows workstation.
+*.sh     text eol=lf
+*.py     text eol=lf
+*.config text eol=lf
+*.yml    text eol=lf
+*.txt    text eol=lf

@@ -1,0 +1,21 @@
+# Generated outputs and large inputs: rebuilt by the scripts, not versioned.
+# Folders stay in git through their .gitkeep files; their contents are ignored.
+data/**
+!data/**/
+!data/**/.gitkeep
+results/**
+!results/**/
+!results/**/.gitkeep
+
+# Python / R / OS clutter
+__pycache__/
+.Rhistory
+.RData
+.DS_Store
+Thumbs.db
+*.swp
+
+# Nextflow runtime files (nextflow is launched from the project root)
+.nextflow/
+.nextflow.log*
+work/

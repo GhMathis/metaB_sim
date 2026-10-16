@@ -1,0 +1,20 @@
+# Grinder arguments that draw the simulated community, once for the whole chimera sweep.
+# Read by grinder through -profile_file: one option per line, comment lines start with #.
+# scripts/02_run_grinder_chimera_sweep.sh runs grinder once with this file, among the SILVA
+# references that carry the primer pair (-forward_reverse in config/grinder_params.txt).
+# The drawn community (references and relative abundances) then goes to every sample
+# through -abundance_file. All 50 samples therefore share exactly the same community, while
+# each draws its reads with its own seed. Grinder ignores the options below when an
+# abundance file is given, which is why they live in this file and not in grinder_params.txt.
+#
+# Design values: richness and rank-abundance model (grinder default: uniform 1)
+-diversity 20
+-abundance_model powerlaw 0.1
+#
+# Seed of the community draw. Any integer works; 42 is arbitrary.
+-random_seed 42
+#
+# Grinder defaults, written out explicitly so they cannot change silently
+-num_libraries 1
+-shared_perc 0
+-permuted_perc 100
